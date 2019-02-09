@@ -2,14 +2,21 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const cors = require('cors');
 const dotenv = require('dotenv');
+const mongoose = require('mongoose');
 
 dotenv.config();
+mongoose.Promise = global.Promise;
 
+const db = mongoose.connection;
 const app = express();
+
+db.on('error', console.error.bind(console, 'MongoDB connection error:'));
 
 // Middleware
 app.use(bodyParser.json({ extended: false }));
 app.use(cors());
+
+app.use('/meals', require('./controllers/meals'));
 
 // Health check
 app.get('/ping', (req, res) => {
