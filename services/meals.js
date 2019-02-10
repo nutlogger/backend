@@ -8,9 +8,12 @@ const loadMealsCollection = () => mongodb.MongoClient.connect(
   },
 ).then(client => client.db(process.env.MONGODB_USER).collection('meals'));
 
-module.exports.decrypt = (text) => {
+module.exports.decrypt = (text, body) => {
   const data = text.split('\n');
-  const result = {};
+  const result = {
+    name: body.name || 'default',
+    quantity: body.quantity || 1,
+  };
   for (let i = 0; i < data.length; i += 1) {
     if (data[i].includes('Calories')) {
       result.calories = module.exports.parseNum(data[i]);
@@ -44,7 +47,7 @@ module.exports.parseNum = (text) => {
       parse += text[i];
     }
   }
-  return parse;
+  return parseInt(parse, 10);
 };
 
 
@@ -77,7 +80,8 @@ module.exports.insertMeal = req => loadMealsCollection()
       },
     ],
   }).then((gcp) => {
-    const results = module.exports.decrypt(gcp.data.responses[0].textAnnotations[0].description);
+    const results = module.exports
+      .decrypt(gcp.data.responses[0].textAnnotations[0].description, req.body);
     return meals.findOneAndUpdate({
       _id: mongodb.ObjectId(req.body.id),
     }, {
@@ -86,19 +90,10 @@ module.exports.insertMeal = req => loadMealsCollection()
       },
     }, {
       returnOriginal: false,
-    }).then(response => response.value);
+    })
+      .then(response => response.value)
+      .catch(error => error);
   }).catch((error) => {
-    console.log(error);
+    console.log(error.error);
+    return error.data;
   }));
-/*
-.then(meals => meals.findOneAndUpdate({
-  _id: req.body.id,
-}, {
-  $set: {
-    createdAt: moment().format(),
-  },
-}, {
-  returnOriginal: false,
-})
-  .then(response => response));
-  */
