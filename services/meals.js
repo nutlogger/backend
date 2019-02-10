@@ -13,6 +13,16 @@ module.exports.decrypt = (text, body) => {
   const result = {
     name: body.name || 'default',
     quantity: body.quantity || 1,
+    calories: 0,
+    fat: 0,
+    saturated: 0,
+    trans: 0,
+    cholesterol: 0,
+    sodium: 0,
+    carbohydrate: 0,
+    fibre: 0,
+    sugars: 0,
+    protein: 0,
   };
   for (let i = 0; i < data.length; i += 1) {
     if (data[i].includes('Calories')) {
@@ -47,7 +57,13 @@ module.exports.parseNum = (text) => {
       parse += text[i];
     }
   }
-  return parseInt(parse, 10);
+  let number = 0;
+  try {
+    number = parseInt(parse, 10);
+  } catch (err) {
+    number = 0;
+  }
+  return number;
 };
 
 
@@ -98,8 +114,10 @@ module.exports.insertMeal = req => loadMealsCollection()
       },
     ],
   }).then((gcp) => {
+    console.log(gcp.data.responses[0]);
     const results = module.exports
       .decrypt(gcp.data.responses[0].textAnnotations[0].description, req.body);
+    console.log(results);
     return meals.findOneAndUpdate({
       _id: mongodb.ObjectId(req.body.id),
     }, {

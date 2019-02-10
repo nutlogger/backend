@@ -47,6 +47,7 @@ router.get('/', (req, res) => {
             total.trans += meal.trans * meal.quantity;
             total.cholesterol += meal.cholesterol * meal.quantity;
             total.sodium += meal.sodium * meal.quantity;
+            total.sugars += meal.sugars * meal.quantity;
             total.carbohydrate += meal.carbohydrate * meal.quantity;
             total.fibre += meal.fibre * meal.quantity;
             total.protein += meal.protein * meal.quantity;
@@ -59,6 +60,7 @@ router.get('/', (req, res) => {
           overall.sodium += total.sodium;
           overall.carbohydrate += total.carbohydrate;
           overall.fibre += total.fibre;
+          overall.sugars += total.sugars;
           overall.protein += total.protein;
           log.total = total;
         }
@@ -100,6 +102,7 @@ router.get('/:id', (req, res) => {
         total.cholesterol += meal.cholesterol * meal.quantity;
         total.sodium += meal.sodium * meal.quantity;
         total.carbohydrate += meal.carbohydrate * meal.quantity;
+        total.sugar += meal.sugar * meal.quantity;
         total.fibre += meal.fibre * meal.quantity;
         total.protein += meal.protein * meal.quantity;
       });
@@ -155,6 +158,7 @@ router.put('/', async (req, res) => {
           total.sodium += meal.sodium * meal.quantity;
           total.carbohydrate += meal.carbohydrate * meal.quantity;
           total.fibre += meal.fibre * meal.quantity;
+          total.sugar += meal.sugar * meal.quantity;
           total.protein += meal.protein * meal.quantity;
         });
         res.status(200).json({
