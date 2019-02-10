@@ -13,7 +13,8 @@ const app = express();
 db.on('error', console.error.bind(console, 'MongoDB connection error:'));
 
 // Middleware
-app.use(bodyParser.json({ extended: false }));
+app.use(bodyParser.json({ limit: '10mb' }));
+app.use(bodyParser.urlencoded({ limit: '10mb', extended: true }));
 app.use(cors());
 
 app.use('/meals', require('./controllers/meals'));
