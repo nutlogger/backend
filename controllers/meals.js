@@ -14,8 +14,58 @@ router.get('/', (req, res) => {
   }
   meals.find(start, end)
     .then((response) => {
+      const overall = {
+        calories: 0,
+        fat: 0,
+        saturated: 0,
+        trans: 0,
+        cholesterol: 0,
+        sodium: 0,
+        carbohydrate: 0,
+        fibre: 0,
+        sugars: 0,
+        protein: 0,
+      };
+      _.forEach(response, (log) => {
+        if (log.meals.length !== 0) {
+          const total = {
+            calories: 0,
+            fat: 0,
+            saturated: 0,
+            trans: 0,
+            cholesterol: 0,
+            sodium: 0,
+            carbohydrate: 0,
+            fibre: 0,
+            sugars: 0,
+            protein: 0,
+          };
+          _.forEach(log.meals, (meal) => {
+            total.calories += meal.calories * meal.quantity;
+            total.fat += meal.fat * meal.quantity;
+            total.saturated += meal.saturated * meal.quantity;
+            total.trans += meal.trans * meal.quantity;
+            total.cholesterol += meal.cholesterol * meal.quantity;
+            total.sodium += meal.sodium * meal.quantity;
+            total.carbohydrate += meal.carbohydrate * meal.quantity;
+            total.fibre += meal.fibre * meal.quantity;
+            total.protein += meal.protein * meal.quantity;
+          });
+          overall.calories += total.calories;
+          overall.fat += total.fat;
+          overall.saturated += total.saturated;
+          overall.trans += total.trans;
+          overall.cholesterol += total.cholesterol;
+          overall.sodium += total.sodium;
+          overall.carbohydrate += total.carbohydrate;
+          overall.fibre += total.fibre;
+          overall.protein += total.protein;
+          log.total = total;
+        }
+      });
       res.status(200).json({
         isSuccess: true,
+        total: overall,
         log: response,
       });
     })
@@ -27,12 +77,40 @@ router.get('/', (req, res) => {
     });
 });
 
-router.get('/', (req, res) => {
-  meals.find()
-    .then((response) => {
+router.get('/:id', (req, res) => {
+  meals.findOne(req.params.id)
+    .then((log) => {
+      const total = {
+        calories: 0,
+        fat: 0,
+        saturated: 0,
+        trans: 0,
+        cholesterol: 0,
+        sodium: 0,
+        carbohydrate: 0,
+        fibre: 0,
+        sugars: 0,
+        protein: 0,
+      };
+      _.forEach(log.meals, (meal) => {
+        total.calories += meal.calories * meal.quantity;
+        total.fat += meal.fat * meal.quantity;
+        total.saturated += meal.saturated * meal.quantity;
+        total.trans += meal.trans * meal.quantity;
+        total.cholesterol += meal.cholesterol * meal.quantity;
+        total.sodium += meal.sodium * meal.quantity;
+        total.carbohydrate += meal.carbohydrate * meal.quantity;
+        total.fibre += meal.fibre * meal.quantity;
+        total.protein += meal.protein * meal.quantity;
+      });
       res.status(200).json({
         isSuccess: true,
-        log: response,
+        log: {
+          id: log._id,
+          total,
+          meals: log.meals,
+          createdAt: log.createdAt,
+        },
       });
     })
     .catch((error) => {
@@ -101,6 +179,15 @@ router.put('/', async (req, res) => {
       error: 'missing parameters',
     });
   }
+});
+
+router.patch('/', async (req, res) => {
+  meals.findOneAndUpdate(req).then((log) => {
+    res.status(200).json({
+      isSuccess: true,
+      log,
+    });
+  });
 });
 
 module.exports = router;

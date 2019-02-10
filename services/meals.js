@@ -59,11 +59,29 @@ module.exports.find = (start, end) => loadMealsCollection()
     },
   }).toArray().then(query => query));
 
+module.exports.findOne = id => loadMealsCollection()
+  .then(meals => meals.find({
+    _id: mongodb.ObjectId(id),
+  }).toArray().then(query => query[0]));
+
 module.exports.insertOne = () => loadMealsCollection()
   .then(meals => meals.insertOne({
     meals: [],
     createdAt: new Date(),
   }).then(response => response.ops[0]));
+
+module.exports.findOneAndUpdate = req => loadMealsCollection()
+  .then(meals => meals.findOneAndUpdate({
+    _id: mongodb.ObjectId(req.body.id),
+  }, {
+    $set: {
+      meals: { [`meals.${req.body.position}`]: req.body.meal },
+    },
+  }, {
+    returnOriginal: false,
+  })
+    .then(response => response.value)
+    .catch(error => error));
 
 module.exports.insertMeal = req => loadMealsCollection()
   .then(meals => axios.post(`https://vision.googleapis.com/v1/images:annotate?key=${process.env.GOOGLE_CLOUD_API}`, {
