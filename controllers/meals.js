@@ -102,7 +102,7 @@ router.get('/:id', (req, res) => {
         total.cholesterol += meal.cholesterol * meal.quantity;
         total.sodium += meal.sodium * meal.quantity;
         total.carbohydrate += meal.carbohydrate * meal.quantity;
-        total.sugar += meal.sugar * meal.quantity;
+        total.sugars += meal.sugars * meal.quantity;
         total.fibre += meal.fibre * meal.quantity;
         total.protein += meal.protein * meal.quantity;
       });
